@@ -53,13 +53,26 @@
   .hero-cta{ display:flex; gap:14px; flex-wrap:wrap; }
 
   /* ---------- hero status panel ---------- */
+  /* ---------- hero right column (football + status panel) ---------- */
+  .hero-right{ position:absolute; right:32px; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:18px; z-index:1; }
+  @media (max-width:1080px){ .hero-right{ display:none; } }
+
+  .football-stage{ position:relative; width:260px; height:210px; }
+  .football-shadow{ position:absolute; left:50%; bottom:2px; width:120px; height:16px; border-radius:50%;
+    background:var(--ink); animation: fball-shadow 1.3s ease-in-out infinite; }
+  .football-bounce{ position:absolute; left:50%; bottom:20px; animation: fball-bounce 1.3s cubic-bezier(.5,0,.5,1) infinite; }
+  .football-bounce svg{ display:block; width:120px; height:120px; animation: fball-spin 1.3s linear infinite; }
+  @keyframes fball-bounce{ 0%{ transform:translate(-50%,0); } 50%{ transform:translate(-50%,-140px); } 100%{ transform:translate(-50%,0); } }
+  @keyframes fball-shadow{ 0%{ transform:translateX(-50%) scaleX(1); opacity:.28; } 50%{ transform:translateX(-50%) scaleX(.5); opacity:.1; } 100%{ transform:translateX(-50%) scaleX(1); opacity:.28; } }
+  @keyframes fball-spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+  .football-caption{ font-size:12px; color:var(--ink-dim); text-align:center; margin-top:2px; }
+
   .hero-panel{
-    position:absolute; right:32px; top:50%; transform:translateY(-50%);
-    width:300px; background: color-mix(in srgb, var(--panel) 90%, transparent);
+    width:280px; background: color-mix(in srgb, var(--panel) 90%, transparent);
     border:1px solid var(--line); border-radius:6px; overflow:hidden; box-shadow:var(--shadow);
-    backdrop-filter: blur(6px); z-index:1;
+    backdrop-filter: blur(6px);
   }
-  @media (max-width:1080px){ .hero-panel{ display:none; } }
   .hp-head{ display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--panel-2); border-bottom:1px solid var(--line); }
   .hp-head i{ width:8px; height:8px; border-radius:50%; background:var(--line); }
   .hp-title{ margin-left:auto; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--ink-dim); }
@@ -74,6 +87,27 @@
   .hp-log .line{ opacity:0; transform:translateY(4px); animation: hp-in .4s ease forwards; }
   .hp-log .line .ok{ color:var(--accent); }
   @keyframes hp-in{ to{ opacity:1; transform:translateY(0); } }
+
+  /* ---------- hero buddy (mascot) ---------- */
+  .hero-buddy{ position:absolute; right:70px; top:15%; width:120px; z-index:1; text-align:center; }
+  @media (max-width:1080px){ .hero-buddy{ display:none; } }
+  .buddy-float{ animation: buddy-bob 3.4s ease-in-out infinite; }
+  @keyframes buddy-bob{ 0%,100%{ transform:translateY(0) rotate(-1.5deg); } 50%{ transform:translateY(-10px) rotate(1.5deg); } }
+  .buddy-eye{ animation: buddy-blink 4.2s ease-in-out infinite; transform-origin:center; }
+  .buddy-eye.e2{ animation-delay:.06s; }
+  @keyframes buddy-blink{ 0%,92%,100%{ transform:scaleY(1); } 95%{ transform:scaleY(0.1); } }
+  .buddy-antenna-tip{ animation: buddy-ping 1.8s ease-in-out infinite; transform-origin:center; }
+  @keyframes buddy-ping{ 0%,100%{ opacity:1; } 50%{ opacity:.3; } }
+  .buddy-bubble{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--ink-dim);
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:7px 10px;
+    margin-bottom:8px; min-height:16px; box-shadow:var(--shadow); position:relative;
+  }
+  .buddy-bubble::after{
+    content:''; position:absolute; bottom:-6px; left:50%; transform:translateX(-50%);
+    width:10px; height:10px; background:var(--panel); border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+    rotate:45deg;
+  }
   .btn{ font-family:'JetBrains Mono', monospace; font-size:13px; letter-spacing:.02em; padding:12px 20px;
     border-radius:2px; text-decoration:none; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line);
     transition: border-color .2s ease, background .2s ease, transform .2s ease; cursor:pointer; background:none; color:var(--ink); }
@@ -277,13 +311,53 @@
     <a class="btn ghost" href="#work">view projects ↓</a>
   </div>
 
-  <div class="hero-panel">
-    <div class="hp-head"><i></i><i></i><i></i><span class="hp-title">status.log</span></div>
-    <div class="hp-body">
-      <div class="hp-meter"><span>CPU</span><div class="bar"><div class="fill" id="cpuFill"></div></div><span class="pct" id="cpuPct">0%</span></div>
-      <div class="hp-meter"><span>MEM</span><div class="bar"><div class="fill" id="memFill"></div></div><span class="pct" id="memPct">0%</span></div>
-      <div class="hp-meter"><span>NET</span><div class="bar"><div class="fill" id="netFill"></div></div><span class="pct" id="netPct">0%</span></div>
-      <div class="hp-log" id="hpLog"></div>
+  <div class="hero-buddy">
+    <div class="buddy-bubble mono" id="buddyLine">compiling...</div>
+    <div class="buddy-float">
+      <svg viewBox="0 0 100 100" width="80" height="80" style="margin:0 auto;display:block;">
+        <line x1="50" y1="6" x2="50" y2="16" stroke="var(--ink-dim)" stroke-width="2"/>
+        <circle class="buddy-antenna-tip" cx="50" cy="6" r="4" fill="var(--accent)"/>
+        <rect x="18" y="16" width="64" height="54" rx="10" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+        <rect class="buddy-eye e1" x="34" y="36" width="9" height="12" rx="4" fill="var(--ink)"/>
+        <rect class="buddy-eye e2" x="57" y="36" width="9" height="12" rx="4" fill="var(--ink)"/>
+        <path d="M38 56 Q50 64 62 56" stroke="var(--accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <line x1="30" y1="80" x2="30" y2="90" stroke="var(--ink-dim)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="50" y1="80" x2="50" y2="92" stroke="var(--ink-dim)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="70" y1="80" x2="70" y2="90" stroke="var(--ink-dim)" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="football-stage">
+      <div class="football-shadow"></div>
+      <div class="football-bounce">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.5"/>
+          <polygon points="50,29 62,38 57,53 43,53 38,38" fill="var(--ink)"/>
+          <line x1="50" y1="29" x2="50" y2="7" stroke="var(--ink)" stroke-width="2.5"/>
+          <line x1="62" y1="38" x2="83" y2="27" stroke="var(--ink)" stroke-width="2.5"/>
+          <line x1="57" y1="53" x2="69" y2="79" stroke="var(--ink)" stroke-width="2.5"/>
+          <line x1="43" y1="53" x2="31" y2="79" stroke="var(--ink)" stroke-width="2.5"/>
+          <line x1="38" y1="38" x2="17" y2="27" stroke="var(--ink)" stroke-width="2.5"/>
+          <circle cx="50" cy="7" r="3.5" fill="var(--ink)"/>
+          <circle cx="83" cy="27" r="3.5" fill="var(--ink)"/>
+          <circle cx="69" cy="79" r="3.5" fill="var(--ink)"/>
+          <circle cx="31" cy="79" r="3.5" fill="var(--ink)"/>
+          <circle cx="17" cy="27" r="3.5" fill="var(--ink)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="football-caption mono">&gt; 1000+ problems solved, 0 goals scored ⚽</div>
+
+    <div class="hero-panel">
+      <div class="hp-head"><i></i><i></i><i></i><span class="hp-title">status.log</span></div>
+      <div class="hp-body">
+        <div class="hp-meter"><span>CPU</span><div class="bar"><div class="fill" id="cpuFill"></div></div><span class="pct" id="cpuPct">0%</span></div>
+        <div class="hp-meter"><span>MEM</span><div class="bar"><div class="fill" id="memFill"></div></div><span class="pct" id="memPct">0%</span></div>
+        <div class="hp-meter"><span>NET</span><div class="bar"><div class="fill" id="netFill"></div></div><span class="pct" id="netPct">0%</span></div>
+        <div class="hp-log" id="hpLog"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -690,6 +764,26 @@
     }
     pushLine();
     if(!reduceMotion) setInterval(pushLine, 1900);
+  })();
+
+  // hero buddy speech bubble
+  (function buddyTalk(){
+    const el = document.getElementById('buddyLine');
+    if(!el) return;
+    const lines = [
+      'compiling...', 'it works on my machine', 'sudo make coffee',
+      'segfault? never heard of her', '0-indexed since birth', 'still faster than my wifi',
+      'poll() said trust me bro', 'committing before coffee ☕', 'no bugs, just features',
+      '1000+ problems, 1 patience'
+    ];
+    let i = 0;
+    function next(){
+      i = (i+1) % lines.length;
+      el.style.opacity = 0;
+      setTimeout(() => { el.textContent = lines[i]; el.style.opacity = 1; }, 250);
+    }
+    el.style.transition = 'opacity .25s ease';
+    if(!reduceMotion) setInterval(next, 3200);
   })();
 
   // scroll reveal
